@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="”ja”">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game</title>
+  </head>
+
+  <body>
+    <div>
+      <h2>Stage4</h2>
+    </div>
+    <div id="app" class="container">
+      <p>{{ todaysDate }}</p>
+      <h1><span>Noun</span> 動詞 1701-1786</h1>
+
+      <button v-on:click="gameStart" v-if="startFlg != true">START</button>
+
+      <div v-if="startFlg == true" class="mainContainer">
+        <h1 class="question mb-20">{{ questionList[0][0]}}</h1>
+        <div class="textBoxWrapper mb-20">
+          <input class="mb-20" id="textbox" v-model="typeBox" type="text" />
+        </div>
+
+        <div class="guageWrapper mb-20">
+          <div class="guage" v-bind:style="styleObject"></div>
+        </div>
+        <div class="question-counts">
+          {{ current_counts }}/{{ this.question_length-1 }}
+        </div>
+      </div>
+      <div class="ans">
+        <div class="answers"><div class="done"></div></div>
+      </div>
+    </div>
+  </body>
+</html>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+<script>
+  Vue.createApp({
+    data() {
+      return {
+        todaysDate:
+          new Date().getFullYear() +
+          "年" +
+          (new Date().getMonth() + 1) +
+          "月" +
+          new Date().getDate() +
+          "日",
+        textForm: "",
+        typeBox: "",
+        questionList: [
+          ["あきらかにする", "clarify"],
+          ["粉々に砕く", "smash"],
+          ["悲しむ", "mourn"],
+          ["粉々にする", "shatter"],
+          ["呼ぶ", "summon"],
+          ["残る", "linger"],
+          ["嘆く", "lament"],
+          ["喜ぶ", "rejoice"],
+          ["配分する", "allocate"],
+          ["ピシャリと打つ", "slap"],
+          ["主張する。 ____that", "contend"],
+          ["誓う", "swear"],
+          ["識別する", "discern"],
+          ["悪化させる", "degrade"],
+          ["築く", "erect"],
+          ["証言する", "testify"],
+          ["駆り立てる", "spur"],
+          ["才能に恵まれる。be ____ with", "endowed"],
+          ["歩き回る", "roam"],
+          ["眉をひそめる。___ on smoking", "frown"],
+          ["呼び込む", "lure"],
+          ["逆らう", "defy"],
+          ["ぶらつく", "stroll"],
+          ["がたがた鳴らす", "rattle"],
+          ["調和させる", "reconcile"],
+          ["ぼやかす", "blur"],
+          ["なだめる", "soothe"],
+          ["低下させる", "impair"],
+          ["従う。 ___ with", "comply"],
+          ["穴をあける", "pierce"],
+          ["つまづく", "stumble"],
+          ["妨げる", "hinder"],
+          ["嘲る", "mock"],
+          ["具現する（表現する）", "embody"],
+          ["忍び寄る", "stalk"],
+          ["宣言する", "proclaim"],
+          ["拍手する", "applaud"],
+          ["与える。___ pain on", "inflict"],
+          ["合併する。___ with", "marge"],
+          ["避難した", "evacuated"],
+          ["元に戻らない", "undone"],
+          ["突く", "poke"],
+          ["つきまとわれる", "haunted"],
+          ["固く守る。____ to", "adhere"],
+          ["まとめる", "compile"],
+          ["しぼむ", "wither"],
+          ["びっくりさせる", "stun"],
+          ["のどがつまる", "choke"],
+          ["悪化する", "deteriorate"],
+          ["捨てる", "dump"],
+          ["つぶやく", "murmur"],
+          ["削除する", "delete"],
+          ["阻害する", "inhibit"],
+          ["そらす。____ attention from", "divert"],
+          ["飼いならす", "tame"],
+          ["手に入れる", "reap"],
+          ["断言する", "affirm"],
+          ["浸る。be _____ in", "immersed"],
+          ["期限が切れる", "expire"],
+          ["乗り出す。 ____ on", "embark"],
+          ["誓う。 ___ to fight.", "vow"],
+          ["予知する", "foresee"],
+          ["崇拝する", "adore"],
+          ["切望する。___ for", "yearn"],
+          ["弱める", "undermine"],
+          ["吸う", "suck"],
+          ["誓う。____ to support them.", "pledge"],
+          ["立ち入る。____ on", "intrude"],
+          ["訴える", "sue"],
+          ["歪曲する", "distort"],
+          ["消す", "extinguish"],
+          ["説教する", "preach"],
+          ["抑制する", "curb"],
+          ["耐える", "withstand"],
+          ["ひたす", "dip"],
+          ["暗唱する", "recite"],
+          ["押し込む", "thrust"],
+          ["嘆願する。____ with", "plead"],
+          ["恥をかかせる", "humiliate"],
+          ["放出する", "discharge"],
+          ["非難する", "condemn"],
+          ["検索する", "retrieve"],
+          ["すくめる", "shrug"],
+          ["呼び起こす", "evoke"],
+          ["取ってくる", "fetch"],
+          ["おせじを言う", "flatter"],
+          ["CLEAR!", "******"],
+        ],
+        startFlg: "",
+        current_counts: 0,
+        question_counts: 0,
+        pass: "pass",
+      };
+    },
+    computed: {
+      styleObject: function () {
+        width = (100 / (this.question_length - 1)) * this.current_counts + "%";
+        if (this.current_counts == this.question_length - 1) {
+          color = "#03a9f4";
+        } else if (this.current_counts < this.question_length / 2) {
+          color = "tomato";
+        } else {
+          color = "#c472c4";
+        }
+        return {
+          width: width,
+          "background-color": color,
+        };
+      },
+    },
+    methods: {
+      gameStart() {
+        this.startFlg = true;
+        this.$nextTick(function () {
+          document.getElementById("textbox").focus();
+        });
+      },
+    },
+    mounted: function () {
+      this.question_length = this.questionList.length;
+    },
+    watch: {
+      todaysDate: function () {
+        new Date().getFullYear() +
+          "年" +
+          (new Date().getMonth() + 1) +
+          "月" +
+          new Date().getDate() +
+          "日" +
+          new Date().getHours() +
+          "時" +
+          new Date().getMinutes() +
+          "分" +
+          new Date().getSeconds() +
+          "秒";
+      },
+      typeBox: function () {
+        const a = document.getElementById("textbox");
+        const div = document.querySelector(".answers");
+
+        if (a.value === this.questionList[0][1]) {
+          let addDiv = document.createElement("div");
+          addDiv.textContent = this.questionList[0][1];
+          div.appendChild(addDiv);
+          addDiv.classList.add("done");
+          const insert = document.querySelector(".done");
+          div.insertBefore(addDiv, insert);
+          this.questionList.splice(0, 1);
+          this.typeBox = "";
+          this.current_counts++;
+        } else if (a.value === "pass") {
+          let addDiv = document.createElement("div");
+          addDiv.textContent = this.questionList[0][1];
+          addDiv.classList.add("pass");
+          addDiv.classList.add("done");
+          const insert = document.querySelector(".done");
+          div.insertBefore(addDiv, insert);
+          this.questionList.splice(0, 1);
+          this.current_counts++;
+        } else if (a.value.length > 10 && a.valu != this.questionList[0][1]) {
+          this.typeBox = "";
+          console.log("if1");
+        } else if (a.value == "passs") {
+          console.log("ok");
+          this.typeBox = "";
+        }
+      },
+    },
+  }).mount("#app");
+</script>
+
+<style>
+  * {
+    font-family: inherit;
+    font-family: inherit;
+    line-height: inherit;
+  }
+  span {
+    color: rgb(41, 123, 155);
+  }
+
+  body,
+  html {
+    max-width: 360px;
+    font-size: 12px;
+  }
+
+  .container {
+    max-width: 360px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  button {
+    height: 50px;
+    font-size: 32px;
+    background-color: #333;
+    color: #fff;
+    padding: 4px 60px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .question {
+    text-align: left;
+  }
+
+  #textbox {
+    max-width: 360px;
+    text-align: left;
+    outline: none;
+    border: none;
+    font-size: 32px;
+  }
+
+  .textBoxWrapper {
+    border-bottom: 1px solid grey;
+  }
+
+  .guage {
+    height: 12px;
+    transition: all 0.5s ease;
+  }
+  .guageWrapper {
+    border: 1px solid;
+    height: 12px;
+  }
+
+  .mb-20 {
+    margin-bottom: 20px;
+  }
+  .answers {
+    font-size: 16px;
+  }
+  /* ここからタブレット */
+  @media screen and (min-width: 800px) {
+    * {
+      font-family: inherit;
+      font-family: inherit;
+      line-height: inherit;
+    }
+    span {
+      color: rgb(41, 123, 155);
+    }
+
+    body,
+    html {
+      max-width: 720px;
+      font-size: 24px;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    button {
+      height: 50px;
+      font-size: 32px;
+      background-color: #c74343;
+      color: #fff;
+      padding: 4px 60px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .question {
+      text-align: left;
+    }
+
+    #textbox {
+      max-width: 720px;
+      text-align: left;
+      outline: none;
+      border: none;
+      font-size: 64px;
+    }
+
+    .textBoxWrapper {
+      border-bottom: 1px solid grey;
+    }
+
+    .guage {
+      height: 24px;
+      transition: all 0.5s ease;
+    }
+    .guageWrapper {
+      border: 1px solid;
+      height: 24px;
+    }
+
+    .mb-20 {
+      margin-bottom: 20px;
+    }
+    .answers {
+      font-size: 32px;
+    }
+
+    .pass {
+      color: red;
+    }
+    .question-counts {
+      font-size: 24px;
+      color: rgb(41, 123, 155);
+      font-weight: bold;
+    }
+  }
+</style>
